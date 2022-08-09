@@ -1,37 +1,26 @@
-import {Request, Response} from 'express'
+import { Request, Response } from 'express'
 import { erros, sucess } from '../constants/constatnts'
 import connection from '../data/connection'
 
 
-export const getTaskUser = async (req:Request, res: Response):Promise <void> => {
+export const getTaskUser = async (req: Request, res: Response): Promise<void> => {
 
-     try{
-        
-        const  { creatorUserId }  = req.query
+    try {
+
+        const { creatorUserId } = req.query
         const id_user = req.query.creatorUserId
 
-        
-        if(!creatorUserId){
-            throw new Error(erros.DADOS_AUSENTES.message)
-        }
-
+        if (!creatorUserId) { throw erros.DADOS_AUSENTES }
 
         /*const result = await connection.raw(`SELECT * FROM contas_users JOIN tasks ON contas_users.id_user = tasks.creatorUserId WHERE contas_users.id_user = '${id_user}'`) */
 
-        const result = await connection.select('*').from('contas_users').innerJoin('tasks', 'contas_users.id_user', 'tasks.creatorUserId' ).where('contas_users.id_user', `${id_user}`)
+        const result = await connection.select('*').from('contas_users').innerJoin('tasks', 'contas_users.id_user', 'tasks.creatorUserId').where('contas_users.id_user', `${id_user}`)
 
 
         res.status(sucess.SUCESS_OK.status).send(result)
 
     }
-    catch(error:any){
-        console.log(error)
-        switch(error.message){
-            case erros.DADOS_AUSENTES.message:
-                res.status(erros.DADOS_AUSENTES.status).send(erros.DADOS_AUSENTES.message)
-                break;      
-            default:
-                res.status(erros.NOT_FOUND.status).send(erros.NOT_FOUND.message)
-        }
-    } 
+    catch (error: any) {
+        res.status(erros.DADOS_AUSENTES.status).send(erros.DADOS_AUSENTES.message)
+    }
 }

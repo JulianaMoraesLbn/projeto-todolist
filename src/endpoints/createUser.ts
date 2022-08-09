@@ -4,16 +4,16 @@ import { erros, sucess } from '../constants/constatnts'
 import connection from '../data/connection'
 
 
-export const createUser = async (req: Request, res: Response):Promise<void> => {
+export const createUser = async (req: Request, res: Response): Promise<void> => {
     try {
 
         const { nome, nickname, email } = req.body
 
         if (!nome || !nickname || !email) {
-            throw new Error(erros.DADOS_AUSENTES.message)
-        } 
+            throw erros.DADOS_AUSENTES
+        }
 
-        await connection("contas_users").insert({nome, nickname, email, id_user: generateId()});
+        await connection("contas_users").insert({ nome, nickname, email, id_user: generateId() });
 
         console.log('entrou')
 
@@ -21,14 +21,7 @@ export const createUser = async (req: Request, res: Response):Promise<void> => {
     }
 
     catch (error: any) {
-        console.log(error)
-        switch(error.message){
-            case erros.DADOS_AUSENTES.message:
-                res.status(erros.DADOS_AUSENTES.status).send(erros.DADOS_AUSENTES.message)
-                break;   
-            default:
-                res.status(erros.NOT_FOUND.status).send(erros.NOT_FOUND.message)
-        }
+        res.status(erros.DADOS_AUSENTES.status).send(erros.DADOS_AUSENTES.message)
     }
 }
 
